@@ -9,17 +9,25 @@ services:
     - "--log.level=DEBUG"
     - "--providers.docker=true"
     - "--providers.docker.exposedbydefault=false"
+    - "--entrypoints.http.address=:80"
+    - "--entrypoints.flink.address=:8081"
     ports:
     - "80:80"
+    - "8081:8081"
     volumes:
     - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
   jobmanager:
     image: "flink:1.11.3"
     container_name: "jobmanager"
+    labels:
+    - "traefik.enable=true"
+    - "traefik.port=8081"
+    - "traefik.tcp.routers.flink.rule=HostSNI(`*`)"
+    - "traefik.tcp.routers.flink.entrypoints=flink"
+    - "traefik.tcp.routers.flink.service=flink"
+    - "traefik.tcp.services.flink.loadbalancer.server.port=8081"
     environment:
       FLINK_PROPERTIES: "jobmanager.rpc.address: jobmanager"
     command:
     - "jobmanager"
-    ports:
-    - "8081"
