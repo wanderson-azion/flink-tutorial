@@ -31,3 +31,12 @@ services:
       FLINK_PROPERTIES: "jobmanager.rpc.address: jobmanager"
     command:
     - "jobmanager"
+
+  taskmanager:
+    image: "flink:1.11.3"
+    labels:
+    - "traefik.enable=false"
+    environment:
+      FLINK_PROPERTIES: "jobmanager.rpc.address: jobmanager"
+    command:
+    - "taskmanager"
